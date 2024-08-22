@@ -1,0 +1,22 @@
+.drag-drop-area {
+  border: 2px dashed #007bff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 80%;
+  max-width: 800px;
+  text-align: center;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333; /* Ensure text is readable */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.drag-drop-area.dragging {
+  border-color: #0056b3;
+  background-color: #e9ecef;
+}
+
+.drag-drop-area p {
+  margin: 0;
+}
