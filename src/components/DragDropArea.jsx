@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import '../styles/DragDropArea.css';
 
 const DragDropArea = ({ onFileDrop }) => {
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -22,14 +23,33 @@ const DragDropArea = ({ onFileDrop }) => {
     setIsDragging(false);
   };
 
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      onFileDrop(file);
+    }
+  };
+
   return (
     <div
       className={`drag-drop-area ${isDragging ? 'dragging' : ''}`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
+      onClick={handleClick} // Trigger file input click
     >
       <p>Drag & Drop a .txt file here, or click to select a file</p>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+        accept=".txt"
+      />
     </div>
   );
 };

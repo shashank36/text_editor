@@ -1,29 +1,41 @@
 import React, { useState } from 'react';
-import TextEditor from './components/TextEditor';
-import DragDropArea from './components/DragDropArea';
-import './styles/App.css';
+import { Container, Typography, Box } from '@mui/material';
+import FileUpload from './components/FileUpload';
+import TextDisplay from './components/TextDisplay';
 
 function App() {
   const [text, setText] = useState('');
-  const [fileUploaded, setFileUploaded] = useState(false);
 
-  const handleFileDrop = (file) => {
+  const handleFileUpload = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       setText(e.target.result);
-      setFileUploaded(true);
     };
     reader.readAsText(file);
   };
 
   return (
-    <div className="App">
-      {!fileUploaded ? (
-        <DragDropArea onFileDrop={handleFileDrop} />
+    <Box
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100vh',
+        backgroundColor: '#f5f5f5',
+        padding: '20px',
+      }}
+    >
+      <Typography variant="h4" gutterBottom>
+        Text Correction Prototype v0.1
+      </Typography>
+      {!text ? (
+        <FileUpload onFileUpload={handleFileUpload} />
       ) : (
-        <TextEditor value={text} onChange={setText} />
+        <TextDisplay text={text} />
       )}
-    </div>
+    </Box>
   );
 }
 
