@@ -32,6 +32,7 @@ const TextDisplay = ({ text }) => {
     const urlRegex = /(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/g;
     const pageBreakRegex = /^=!pgB!=.*=!Epg!=/;
     const englishWordRegex = /\b[a-zA-Z]+\b/g;
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/g; // Example special characters
   
     lines.forEach((line, index) => {
       if (pattern === 'Modify Number Hyphen' && /-(\d|\p{Nd})/u.test(line)) {
@@ -52,6 +53,9 @@ const TextDisplay = ({ text }) => {
       } else if (pattern === 'Remove English Words' && englishWordRegex.test(line) && !pageBreakRegex.test(line)) {
         matchedLines.push(line);
         matchedIndices.push(index);
+      } else if (pattern === 'Remove Special Characters' && specialCharRegex.test(line) && !pageBreakRegex.test(line)) {
+        matchedLines.push(line);
+        matchedIndices.push(index);
       }
     });
   
@@ -59,6 +63,7 @@ const TextDisplay = ({ text }) => {
     setFilteredLineIndices(matchedIndices);
     setCurrentLine(0);
   };
+  
 
   const handleUpClick = () => {
     setCurrentLine((prev) => Math.max(prev - 1, 0));
@@ -81,8 +86,9 @@ const TextDisplay = ({ text }) => {
       if (suggestion === 'Remove URL') {
         updatedLine = lines[originalLineIndex].replace(selectedWord, '');
       } else if (suggestion === 'Remove English Word') {
-        // Remove English words from the line
         updatedLine = lines[originalLineIndex].replace(new RegExp(`\\b${selectedWord}\\b`, 'g'), '');
+      } else if (suggestion === 'Remove Special Character') {
+        updatedLine = lines[originalLineIndex].replace(new RegExp(`\\${selectedWord}`, 'g'), '');
       } else {
         updatedLine = lines[originalLineIndex].replace(selectedWord, suggestion);
       }

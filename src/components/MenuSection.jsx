@@ -55,6 +55,14 @@ const MenuSection = ({ selectedPattern, handleMenuClick }) => (
       </Button>
     </Tooltip>
 
+    <Tooltip title="Remove all special characters" placement="right">
+      <Button
+        variant={selectedPattern === 'Remove Special Characters' ? 'contained' : 'outlined'}
+        onClick={() => handleMenuClick('Remove Special Characters')}
+      >
+        Remove Special Characters
+      </Button>
+    </Tooltip>
     {/* Add more buttons with tooltips as needed */}
   </Box>
 );
