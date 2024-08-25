@@ -32,6 +32,13 @@ const TextEditor = ({
     }
   }, [currentLine]);
 
+
+  const getHindiNumeralSuggestions = (selectedNumeral) => {
+    const hindiNumerals = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+    return hindiNumerals.filter(numeral => numeral !== selectedNumeral);
+  };
+  
+
   const handleTextSelect = () => {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
@@ -39,10 +46,8 @@ const TextEditor = ({
     if (selectedText && selection.anchorNode.parentElement.classList.contains('highlight')) {
       setSelectedWord(selectedText);
       setHighlightedText(filteredLines[currentLine]);
-      // Log the selected word
-      console.log("Selected Word:", selectedText);
   
-      // Add logic for suggestions based on pattern
+      // Provide suggestions based on the selected pattern
       if (/-(\d|\p{Nd})/u.test(selectedText)) {
         setSuggestions([selectedText.replace(/-(\d|\p{Nd})/u, '- $1')]);
       } else if (/([a-zA-Z])\-([a-zA-Z])/.test(selectedText)) {
@@ -53,6 +58,8 @@ const TextEditor = ({
         setSuggestions(['पंडित']);
       } else if (/मि\.|मि०/.test(selectedText)) {
         setSuggestions(['मिस्टर']);
+      } else if (/[\u0966-\u096F]/.test(selectedText)) { // Check for Hindi numerals
+        setSuggestions(getHindiNumeralSuggestions(selectedText));
       } else {
         setSuggestions([]);
       }

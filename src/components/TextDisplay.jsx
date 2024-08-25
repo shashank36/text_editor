@@ -3,6 +3,7 @@ import { Container, Grid, Button, Box } from '@mui/material';
 import TextEditor from './TextEditor';
 import OriginalTextViewer from './OriginalTextViewer';
 import MenuSection from './MenuSection';
+import GoogleTranslateRedirect from './GoogleTranslateRedirect'; // Import the new component
 import './TextDisplay.css';
 
 const TextDisplay = ({ text }) => {
@@ -36,6 +37,9 @@ const TextDisplay = ({ text }) => {
         matchedLines.push(line);
         matchedIndices.push(index);
       } else if (pattern === 'Modify Hindi Short Forms' && /(वं\.|वं०|पं\.|पं०|मि\.|मि०)/.test(line)) {
+        matchedLines.push(line);
+        matchedIndices.push(index);
+      } else if (pattern === 'Modify Hindi Numerals' && /[\u0966-\u096F]/.test(line)) { // Add this line
         matchedLines.push(line);
         matchedIndices.push(index);
       }
@@ -116,6 +120,10 @@ const TextDisplay = ({ text }) => {
             <Box mt={2}>
               <Button variant="contained" onClick={handleUpClick}>Up</Button>
               <Button variant="contained" onClick={handleDownClick} sx={{ ml: 2 }}>Down</Button>
+            </Box>
+            {/* Add the GoogleTranslateRedirect component here */}
+            <Box mt={2}>
+              <GoogleTranslateRedirect />
             </Box>
             {suggestions.length > 0 && (
               <Box sx={{ marginTop: 2 }}>

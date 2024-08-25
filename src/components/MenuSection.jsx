@@ -27,6 +27,16 @@ const MenuSection = ({ selectedPattern, handleMenuClick }) => (
         Modify Hindi Short Forms
       </Button>
     </Tooltip>
+
+    <Tooltip title="Find and suggest all Hindi numerals" placement="right">
+      <Button
+        variant={selectedPattern === 'Modify Hindi Numerals' ? 'contained' : 'outlined'}
+        onClick={() => handleMenuClick('Modify Hindi Numerals')}
+      >
+        Modify Hindi Numerals
+      </Button>
+    </Tooltip>
+
     {/* Add more buttons with tooltips as needed */}
   </Box>
 );
