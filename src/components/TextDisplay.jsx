@@ -29,6 +29,9 @@ const TextDisplay = ({ text }) => {
   const applyPattern = (pattern) => {
     let matchedLines = [];
     let matchedIndices = [];
+    const urlRegex = /(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/g;
+    const pageBreakRegex = /^=!pgB!=.*=!Epg!=/;
+  
     lines.forEach((line, index) => {
       if (pattern === 'Modify Number Hyphen' && /-(\d|\p{Nd})/u.test(line)) {
         matchedLines.push(line);
@@ -39,14 +42,17 @@ const TextDisplay = ({ text }) => {
       } else if (pattern === 'Modify Hindi Short Forms' && /(वं\.|वं०|पं\.|पं०|मि\.|मि०)/.test(line)) {
         matchedLines.push(line);
         matchedIndices.push(index);
-      } else if (pattern === 'Modify Hindi Numerals' && /[\u0966-\u096F]/.test(line)) { // Add this line
+      } else if (pattern === 'Modify Hindi Numerals' && /[\u0966-\u096F]/.test(line)) { 
+        matchedLines.push(line);
+        matchedIndices.push(index);
+      } else if (pattern === 'Remove URLs' && urlRegex.test(line) && !pageBreakRegex.test(line)) { // New pattern for URLs
         matchedLines.push(line);
         matchedIndices.push(index);
       }
     });
     setFilteredLines(matchedLines);
     setFilteredLineIndices(matchedIndices);
-    setCurrentLine(0); // Reset to the first matched line
+    setCurrentLine(0);
   };
 
   const handleUpClick = () => {
@@ -65,18 +71,24 @@ const TextDisplay = ({ text }) => {
   const handleSuggestionClick = (suggestion) => {
     if (selectedWord && filteredLineIndices.length > 0) {
       const originalLineIndex = filteredLineIndices[currentLine];
-      const updatedLine = lines[originalLineIndex].replace(selectedWord, suggestion);
-
+      let updatedLine;
+  
+      if (suggestion === 'Remove URL') {
+        updatedLine = lines[originalLineIndex].replace(selectedWord, '');
+      } else {
+        updatedLine = lines[originalLineIndex].replace(selectedWord, suggestion);
+      }
+  
       // Update the original lines array
       const updatedLines = [...lines];
       updatedLines[originalLineIndex] = updatedLine;
       setLines(updatedLines);
-
+  
       // Update the filtered lines
       const updatedFilteredLines = [...filteredLines];
       updatedFilteredLines[currentLine] = updatedLine;
       setFilteredLines(updatedFilteredLines);
-
+  
       setHighlightedText(updatedLine);
       setSelectedWord('');
       setSuggestions([]);

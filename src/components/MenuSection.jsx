@@ -37,6 +37,15 @@ const MenuSection = ({ selectedPattern, handleMenuClick }) => (
       </Button>
     </Tooltip>
 
+    <Tooltip title="Find and remove URLs from the text" placement="right">
+  <Button
+    variant={selectedPattern === 'Remove URLs' ? 'contained' : 'outlined'}
+    onClick={() => handleMenuClick('Remove URLs')}
+  >
+    Remove URLs
+  </Button>
+</Tooltip>
+
     {/* Add more buttons with tooltips as needed */}
   </Box>
 );
