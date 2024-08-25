@@ -43,13 +43,17 @@ const TextEditor = ({
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
     const urlRegex = /(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/g;
-  
+    const englishWordRegex = /\b[a-zA-Z]+\b/g;
+    
     if (selectedText && selection.anchorNode.parentElement.classList.contains('highlight')) {
       setSelectedWord(selectedText);
       setHighlightedText(filteredLines[currentLine]);
   
+      // Add suggestions based on selected text
       if (urlRegex.test(selectedText)) {
         setSuggestions(['Remove URL']);
+      } else if (englishWordRegex.test(selectedText)) {
+        setSuggestions(['Remove English Word']);
       } else if (/-(\d|\p{Nd})/u.test(selectedText)) {
         setSuggestions([selectedText.replace(/-(\d|\p{Nd})/u, '- $1')]);
       } else if (/([a-zA-Z])\-([a-zA-Z])/.test(selectedText)) {

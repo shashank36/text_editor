@@ -31,6 +31,7 @@ const TextDisplay = ({ text }) => {
     let matchedIndices = [];
     const urlRegex = /(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/g;
     const pageBreakRegex = /^=!pgB!=.*=!Epg!=/;
+    const englishWordRegex = /\b[a-zA-Z]+\b/g;
   
     lines.forEach((line, index) => {
       if (pattern === 'Modify Number Hyphen' && /-(\d|\p{Nd})/u.test(line)) {
@@ -45,11 +46,15 @@ const TextDisplay = ({ text }) => {
       } else if (pattern === 'Modify Hindi Numerals' && /[\u0966-\u096F]/.test(line)) { 
         matchedLines.push(line);
         matchedIndices.push(index);
-      } else if (pattern === 'Remove URLs' && urlRegex.test(line) && !pageBreakRegex.test(line)) { // New pattern for URLs
+      } else if (pattern === 'Remove URLs' && urlRegex.test(line) && !pageBreakRegex.test(line)) {
+        matchedLines.push(line);
+        matchedIndices.push(index);
+      } else if (pattern === 'Remove English Words' && englishWordRegex.test(line) && !pageBreakRegex.test(line)) {
         matchedLines.push(line);
         matchedIndices.push(index);
       }
     });
+  
     setFilteredLines(matchedLines);
     setFilteredLineIndices(matchedIndices);
     setCurrentLine(0);
@@ -75,6 +80,9 @@ const TextDisplay = ({ text }) => {
   
       if (suggestion === 'Remove URL') {
         updatedLine = lines[originalLineIndex].replace(selectedWord, '');
+      } else if (suggestion === 'Remove English Word') {
+        // Remove English words from the line
+        updatedLine = lines[originalLineIndex].replace(new RegExp(`\\b${selectedWord}\\b`, 'g'), '');
       } else {
         updatedLine = lines[originalLineIndex].replace(selectedWord, suggestion);
       }

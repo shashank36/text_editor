@@ -38,13 +38,22 @@ const MenuSection = ({ selectedPattern, handleMenuClick }) => (
     </Tooltip>
 
     <Tooltip title="Find and remove URLs from the text" placement="right">
-  <Button
-    variant={selectedPattern === 'Remove URLs' ? 'contained' : 'outlined'}
-    onClick={() => handleMenuClick('Remove URLs')}
-  >
-    Remove URLs
-  </Button>
-</Tooltip>
+      <Button
+        variant={selectedPattern === 'Remove URLs' ? 'contained' : 'outlined'}
+        onClick={() => handleMenuClick('Remove URLs')}
+      >
+        Remove URLs
+      </Button>
+    </Tooltip>
+
+    <Tooltip title="Remove all English words but keep page breaks intact" placement="right">
+      <Button
+        variant={selectedPattern === 'Remove English Words' ? 'contained' : 'outlined'}
+        onClick={() => handleMenuClick('Remove English Words')}
+      >
+        Remove English Words
+      </Button>
+    </Tooltip>
 
     {/* Add more buttons with tooltips as needed */}
   </Box>
