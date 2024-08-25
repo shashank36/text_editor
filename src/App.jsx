@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Typography, Box } from '@mui/material';
 import FileUpload from './components/FileUpload';
 import TextDisplay from './components/TextDisplay';
+import ExplainerSection from './components/ExplainerSection';
 
 function App() {
   const [text, setText] = useState('');
@@ -31,7 +32,10 @@ function App() {
         Text Correction Prototype v0.1
       </Typography>
       {!text ? (
-        <FileUpload onFileUpload={handleFileUpload} />
+        <>
+          <ExplainerSection />
+          <FileUpload onFileUpload={handleFileUpload} />
+        </>
       ) : (
         <TextDisplay text={text} />
       )}
