@@ -35,6 +35,9 @@ const TextDisplay = ({ text }) => {
       } else if (pattern === 'Modify Character Hyphen' && /([a-zA-Z])\-([a-zA-Z])/.test(line)) {
         matchedLines.push(line);
         matchedIndices.push(index);
+      } else if (pattern === 'Modify Hindi Short Forms' && /(वं\.|वं०|पं\.|पं०|मि\.|मि०)/.test(line)) {
+        matchedLines.push(line);
+        matchedIndices.push(index);
       }
     });
     setFilteredLines(matchedLines);

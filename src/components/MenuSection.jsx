@@ -15,6 +15,12 @@ const MenuSection = ({ selectedPattern, handleMenuClick }) => (
     >
       Modify Character Hyphen
     </Button>
+    <Button
+      variant={selectedPattern === 'Modify Hindi Short Forms' ? 'contained' : 'outlined'}
+      onClick={() => handleMenuClick('Modify Hindi Short Forms')}
+    >
+      Modify Hindi Short Forms
+    </Button>
     {/* Add more buttons for other patterns */}
   </Box>
 );

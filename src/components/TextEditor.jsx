@@ -47,6 +47,12 @@ const TextEditor = ({
         setSuggestions([selectedText.replace(/-(\d|\p{Nd})/u, '- $1')]);
       } else if (/([a-zA-Z])\-([a-zA-Z])/.test(selectedText)) {
         setSuggestions([selectedText.replace(/([a-zA-Z])\-([a-zA-Z])/, '$1 - $2')]);
+      } else if (/वं\.|वं०/.test(selectedText)) {
+        setSuggestions(['वंदनीया', 'वंदनीय']);
+      } else if (/पं\.|पं०/.test(selectedText)) {
+        setSuggestions(['पंडित']);
+      } else if (/मि\.|मि०/.test(selectedText)) {
+        setSuggestions(['मिस्टर']);
       } else {
         setSuggestions([]);
       }
