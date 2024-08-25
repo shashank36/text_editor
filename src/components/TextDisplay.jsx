@@ -56,20 +56,24 @@ const TextDisplay = ({ text }) => {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    const updatedHighlightedText = highlightedText.replace(selectedWord, suggestion);
-    setHighlightedText(updatedHighlightedText);
+    if (selectedWord && filteredLineIndices.length > 0) {
+      const originalLineIndex = filteredLineIndices[currentLine];
+      const updatedLine = lines[originalLineIndex].replace(selectedWord, suggestion);
 
-    const currentLineIndex = filteredLineIndices[currentLine];
-    const updatedLines = [...lines];
-    updatedLines[currentLineIndex] = updatedHighlightedText;
-    setLines(updatedLines);
+      // Update the original lines array
+      const updatedLines = [...lines];
+      updatedLines[originalLineIndex] = updatedLine;
+      setLines(updatedLines);
 
-    const updatedFilteredLines = [...filteredLines];
-    updatedFilteredLines[currentLine] = updatedHighlightedText;
-    setFilteredLines(updatedFilteredLines);
+      // Update the filtered lines
+      const updatedFilteredLines = [...filteredLines];
+      updatedFilteredLines[currentLine] = updatedLine;
+      setFilteredLines(updatedFilteredLines);
 
-    setSelectedWord('');
-    setSuggestions([]);
+      setHighlightedText(updatedLine);
+      setSelectedWord('');
+      setSuggestions([]);
+    }
   };
 
   const downloadModifiedText = () => {
@@ -104,6 +108,7 @@ const TextDisplay = ({ text }) => {
               setHighlightedText={setHighlightedText}
               setSuggestions={setSuggestions}
               setSelectedWord={setSelectedWord}
+              setLines={setLines}
             />
             <Box mt={2}>
               <Button variant="contained" onClick={handleUpClick}>Up</Button>

@@ -15,19 +15,19 @@ function App() {
   };
 
   return (
-    <Box
-      style={{
+    <Container 
+      maxWidth="lg"
+      sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
-        height: '100vh',
+        minHeight: '100vh',
         backgroundColor: '#f5f5f5',
-        padding: '20px',
+        padding: 2,
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
         Text Correction Prototype v0.1
       </Typography>
       {!text ? (
@@ -35,7 +35,7 @@ function App() {
       ) : (
         <TextDisplay text={text} />
       )}
-    </Box>
+    </Container>
   );
 }
 

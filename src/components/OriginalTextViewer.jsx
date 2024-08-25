@@ -26,7 +26,14 @@ const OriginalTextViewer = ({ lines, filteredLineIndices, currentLine }) => {
     <Box
       ref={containerRef}
       className="text-display-original"
-      sx={{ overflowY: 'auto', height: '400px', backgroundColor: '#e0e0e0', padding: 2 }}
+      sx={{ 
+        overflowY: 'auto', 
+        height: 'calc(100vh - 48px)', // Adjusted height to fit the viewport
+        width: '35vw',    // Adjust width as needed
+        backgroundColor: '#e0e0e0', 
+        padding: 2, 
+        borderLeft: '1px solid #ccc' // Add a border to separate from TextEditor
+      }}
     >
       {lines.map((line, index) => (
         <Typography

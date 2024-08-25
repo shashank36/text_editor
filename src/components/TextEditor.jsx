@@ -1,8 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import React, { useEffect, useRef } from 'react';
+import { Box, Typography } from '@mui/material';
 import './TextDisplay.css';
 
-const TextEditor = ({ lines, filteredLines, filteredLineIndices, currentLine, setCurrentLine, setHighlightedText, setSuggestions, setSelectedWord }) => {
+const TextEditor = ({ 
+  lines, 
+  filteredLines, 
+  filteredLineIndices, 
+  currentLine, 
+  setCurrentLine, 
+  setHighlightedText, 
+  setSuggestions, 
+  setSelectedWord,
+  setLines 
+}) => {
   const containerRef = useRef(null);
   const lineRefs = useRef([]);
 
@@ -25,10 +35,13 @@ const TextEditor = ({ lines, filteredLines, filteredLineIndices, currentLine, se
   const handleTextSelect = () => {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
-    
-    if (selectedText) {
+  
+    if (selectedText && selection.anchorNode.parentElement.classList.contains('highlight')) {
       setSelectedWord(selectedText);
-
+      setHighlightedText(filteredLines[currentLine]);
+      // Log the selected word
+      console.log("Selected Word:", selectedText);
+  
       // Add logic for suggestions based on pattern
       if (/-(\d|\p{Nd})/u.test(selectedText)) {
         setSuggestions([selectedText.replace(/-(\d|\p{Nd})/u, '- $1')]);
@@ -40,9 +53,10 @@ const TextEditor = ({ lines, filteredLines, filteredLineIndices, currentLine, se
     } else {
       setSelectedWord('');
       setSuggestions([]);
+      setHighlightedText('');
     }
   };
-
+  
   return (
     <Box
       ref={containerRef}
