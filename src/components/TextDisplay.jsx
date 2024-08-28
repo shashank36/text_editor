@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Grid, Button, Box } from '@mui/material';
 import TextEditor from './TextEditor';
+import axios from 'axios';
 import OriginalTextViewer from './OriginalTextViewer';
 import MenuSection from './MenuSection';
 import GoogleTranslateRedirect from './GoogleTranslateRedirect'; // Import the new component
 import './TextDisplay.css';
 
-const TextDisplay = ({ text }) => {
+const TextDisplay = ({ text,  sessionArea, filename }) => {
   const [lines, setLines] = useState([]);
   const [currentLine, setCurrentLine] = useState(0);
   const [highlightedText, setHighlightedText] = useState('');
@@ -15,7 +16,7 @@ const TextDisplay = ({ text }) => {
   const [selectedPattern, setSelectedPattern] = useState('');
   const [filteredLines, setFilteredLines] = useState([]);
   const [filteredLineIndices, setFilteredLineIndices] = useState([]);
-
+  
   useEffect(() => {
     setLines(text.split('\n'));
   }, [text]);
@@ -25,6 +26,24 @@ const TextDisplay = ({ text }) => {
       applyPattern(selectedPattern);
     }
   }, [selectedPattern, lines]);
+
+  const uploadModifiedText = () => {
+    const content = lines.join('\n');
+
+    axios.post('http://127.0.0.1:8000/upload2/', {
+      session_area: sessionArea,
+      filename: filename,
+      content: content
+    })
+    .then(response => {
+      alert('File uploaded successfully!');
+    })
+    .catch(error => {
+      console.error('Error uploading file:', error);
+      alert('Failed to upload file.');
+    });
+  };
+
 
   const applyPattern = (pattern) => {
     let matchedLines = [];
@@ -177,7 +196,9 @@ const TextDisplay = ({ text }) => {
       </Grid>
       <Box mt={2}>
         <Button variant="contained" onClick={downloadModifiedText}>Download Modified Text</Button>
+        <Button variant="contained" onClick={uploadModifiedText} sx={{ ml: 2 }}>Upload to Server</Button>
       </Box>
+      
     </Container>
   );
 };
