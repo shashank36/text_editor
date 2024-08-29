@@ -49,7 +49,7 @@ function App() {
 
   useEffect(() => {
     const queryString = location.search;
-    const { filename, sessionArea } = extractValuesFromURL(`http://localhost:5173${queryString}`);
+    const { filename, sessionArea } = extractValuesFromURL(`http://awgp.guru:8085${queryString}`);
 
     if (filename && sessionArea) {
       // Ensure filename ends with '.txt' and remove any trailing text
@@ -60,7 +60,7 @@ function App() {
 
       // Function to fetch file content
       const fetchFileContent = (sessionArea, filename) => {
-        const downloadUrl = `http://127.0.0.1:8000/download2/${sessionArea}|${filename}`;
+        const downloadUrl = `http://awgp.guru:8084/download2/${sessionArea}|${filename}`;
 
         axios.get(downloadUrl)
           .then((response) => {
@@ -73,7 +73,7 @@ function App() {
             setText('Error fetching file content.');
 
             // Try swapping sessionArea and filename
-            const swappedUrl = `http://127.0.0.1:8000/download2/${filename}|${sessionArea}`;
+            const swappedUrl = `http://awgp.guru:8084/download2/${filename}|${sessionArea}`;
             axios.get(swappedUrl)
               .then((response) => {
                 setText(response.data.file_content);
