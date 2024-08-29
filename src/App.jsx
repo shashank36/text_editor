@@ -6,6 +6,33 @@ import FileUpload from './components/FileUpload';
 import TextDisplay from './components/TextDisplay';
 import ExplainerSection from './components/ExplainerSection';
 
+// Function to extract values from URL
+function extractValuesFromURL(url) {
+  const urlObject = new URL(url);
+  const fileParam = urlObject.searchParams.get('file');
+
+  if (fileParam) {
+    const decodedParam = decodeURIComponent(fileParam);
+
+    try {
+      const cleanedParam = decodedParam
+        .replace(/[{}']/g, '')
+        .split(',')
+        .map(item => item.trim());
+
+      const [filename, sessionArea] = cleanedParam;
+      console.log("FileName: "+filename);
+      console.log("SessionArea: "+sessionArea);
+      return { filename, sessionArea };
+    } catch (error) {
+      console.error('Error parsing the file parameter:', error);
+      return { filename: null, sessionArea: null };
+    }
+  } else {
+    return { filename: null, sessionArea: null };
+  }
+}
+
 function App() {
   const [text, setText] = useState('');
   const location = useLocation();
@@ -21,25 +48,14 @@ function App() {
   };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const fileParam = queryParams.get('file');
+    const queryString = location.search;
+    const { filename, sessionArea } = extractValuesFromURL(`http://localhost:5173${queryString}`);
 
-    if (fileParam) {
-      // Decode the file parameter
-      const decodedParam = decodeURIComponent(fileParam);
-
-      // Clean up the file parameter to extract the session area and filename
-      const cleanedParam = decodedParam.replace(/[{}'"]/g, '').split(',');
-      let sessionArea = cleanedParam[0]?.trim();
-      let filename = cleanedParam[1]?.trim();
-
+    if (filename && sessionArea) {
       // Ensure filename ends with '.txt' and remove any trailing text
       const txtExtensionIndex = filename.lastIndexOf('.txt');
       if (txtExtensionIndex !== -1) {
         filename = filename.substring(0, txtExtensionIndex + 4); // Keep .txt extension
-      }
-      if (filename.length > txtExtensionIndex + 4) {
-        filename = filename.substring(0, txtExtensionIndex + 4); // Remove trailing text after .txt
       }
 
       // Function to fetch file content
