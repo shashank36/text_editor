@@ -30,6 +30,7 @@ const TextEditor = ({
         container.scrollTop += (lineRect.bottom - containerRect.bottom);
       }
     }
+    console.log('TextEditor :', lines[filteredLineIndices[currentLine]]);
   }, [currentLine]);
 
 
@@ -108,14 +109,20 @@ const TextEditor = ({
       className="text-display"
       sx={{ overflowY: 'auto', height: '400px', backgroundColor: '#f0f0f0', padding: 2 }}
       onMouseUp={handleTextSelect}
-    >
+    > 
       {filteredLines.map((line, index) => (
         <Typography
           key={index}
           ref={(el) => (lineRefs.current[index] = el)}
           variant="body1"
           component="p"
-          className={index === currentLine ? 'highlight' : ''}
+          className={
+            index === currentLine
+              ? 'highlight'
+              : index % 2 === 0
+              ? 'even-line'
+              : 'odd-line'
+          }
           sx={{ padding: '4px 0' }}
         >
           {line}

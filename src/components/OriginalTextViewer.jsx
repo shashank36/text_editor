@@ -6,21 +6,26 @@ const OriginalTextViewer = ({ lines, filteredLineIndices, currentLine }) => {
   const containerRef = useRef(null);
   const lineRefs = useRef([]);
 
-  useEffect(() => {
-    if (lineRefs.current[currentLine]) {
-      const container = containerRef.current;
-      const lineElement = lineRefs.current[currentLine];
+  // Map currentLine to the correct index in filteredLineIndices
+  const highlightIndex = filteredLineIndices[currentLine];
 
+  useEffect(() => {
+    if (highlightIndex !== undefined && lineRefs.current[highlightIndex]) {
+      const container = containerRef.current;
+      const lineElement = lineRefs.current[highlightIndex];
+
+      // Scroll to make the highlighted line visible in the center of the container
       const lineRect = lineElement.getBoundingClientRect();
       const containerRect = container.getBoundingClientRect();
 
-      if (lineRect.top < containerRect.top) {
-        container.scrollTop -= (containerRect.top - lineRect.top);
-      } else if (lineRect.bottom > containerRect.bottom) {
-        container.scrollTop += (lineRect.bottom - containerRect.bottom);
+      if (lineRect.top < containerRect.top || lineRect.bottom > containerRect.bottom) {
+        const offset = lineRect.top - containerRect.top;
+        container.scrollTop += offset - containerRect.height / 2 + lineRect.height / 2;
       }
     }
-  }, [currentLine]);
+    console.log("Original: ", lines[highlightIndex]);
+
+  }, [highlightIndex]);
 
   return (
     <Box
@@ -30,7 +35,7 @@ const OriginalTextViewer = ({ lines, filteredLineIndices, currentLine }) => {
         overflowY: 'auto', 
         height: 'calc(100vh - 48px)', // Adjusted height to fit the viewport
         width: '35vw',    // Adjust width as needed
-        backgroundColor: '#e0e0e0', 
+        backgroundColor: '#ffffff', 
         padding: 2, 
         borderLeft: '1px solid #ccc' // Add a border to separate from TextEditor
       }}
@@ -41,7 +46,7 @@ const OriginalTextViewer = ({ lines, filteredLineIndices, currentLine }) => {
           ref={(el) => (lineRefs.current[index] = el)}
           variant="body1"
           component="p"
-          className={filteredLineIndices.includes(index) && index === currentLine ? 'highlight' : ''}
+          className={index === highlightIndex ? 'highlight' : ''}
           sx={{ padding: '4px 0' }}
         >
           {line}

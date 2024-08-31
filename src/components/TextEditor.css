@@ -19,8 +19,16 @@
   padding: 5px 0;
 }
 
+.even-line {
+  background-color: #771c1c; /* Light background color for even lines */
+}
+
+.odd-line {
+  background-color: #ffffff; /* Default background color for odd lines */
+}
+
 .highlight {
-  background-color: #ffff99;
+  background-color: #c2d610; /* Highlight color for the selected line */
 }
 
 .controls {
