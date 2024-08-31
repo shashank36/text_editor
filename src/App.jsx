@@ -21,8 +21,8 @@ function extractValuesFromURL(url) {
         .map(item => item.trim());
 
       const [filename, sessionArea] = cleanedParam;
-      console.log("FileName: "+filename);
-      console.log("SessionArea: "+sessionArea);
+      console.log("FileName: " + filename);
+      console.log("SessionArea: " + sessionArea);
       return { filename, sessionArea };
     } catch (error) {
       console.error('Error parsing the file parameter:', error);
@@ -49,7 +49,7 @@ function App() {
 
   useEffect(() => {
     const queryString = location.search;
-    const { filename, sessionArea } = extractValuesFromURL(`http://awgp.guru:8085${queryString}`);
+    let { filename, sessionArea } = extractValuesFromURL(`http://awgp.guru:8085${queryString}`);
 
     if (filename && sessionArea) {
       // Ensure filename ends with '.txt' and remove any trailing text
