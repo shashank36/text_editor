@@ -147,9 +147,6 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Box>
-            <Typography variant="h3" gutterBottom>
-              Edit Text
-            </Typography>
             <TextEditor
               lines={lines}
               filteredLines={filteredLines}
@@ -165,30 +162,40 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
               <Button variant="contained" onClick={handleUpClick}>Up</Button>
               <Button variant="contained" onClick={handleDownClick} sx={{ ml: 2 }}>Down</Button>
             </Box>
-            {/* Add the GoogleTranslateRedirect component here */}
             <Box mt={2}>
               <GoogleTranslateRedirect />
             </Box>
+  
+            
             {suggestions.length > 0 && (
-              <Box sx={{ marginTop: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap', // Wraps to the next line when space runs out
+                  marginTop: 2,
+                  gap: 1, // Adds some spacing between the buttons
+                }}
+              >
                 {suggestions.map((suggestion, index) => (
                   <Button
                     key={index}
                     variant="outlined"
                     onClick={() => handleSuggestionClick(suggestion)}
-                    sx={{ display: 'block', marginBottom: 1 }}
+                    sx={{
+                      marginBottom: 1, // Spacing between rows
+                      flex: '0 1 auto', // Allow the button to grow and shrink
+                    }}
                   >
                     {suggestion}
                   </Button>
                 ))}
               </Box>
             )}
+            
+  
           </Box>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Typography variant="h4" gutterBottom>
-            Complete Text
-          </Typography>
           <OriginalTextViewer
             lines={lines}
             filteredLineIndices={filteredLineIndices}
@@ -202,6 +209,7 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
       </Box>
     </Container>
   );
+  
 };
 
 export default TextDisplay;
