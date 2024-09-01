@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import FileUpload from './components/FileUpload';
 import TextDisplay from './components/TextDisplay';
 import ExplainerSection from './components/ExplainerSection';
+import config from '../app_config';
 
 // Function to extract values from URL
 function extractValuesFromURL(url) {
@@ -60,7 +61,8 @@ function App() {
 
       // Function to fetch file content
       const fetchFileContent = (sessionArea, filename) => {
-        const downloadUrl = `http://awgp.guru:8084/download2/${sessionArea}|${filename}`;
+        const downloadUrlPre = config.downloadUrlPre;
+        const downloadUrl = `${downloadUrlPre}/${sessionArea}|${filename}`;
 
         axios.get(downloadUrl)
           .then((response) => {
@@ -73,7 +75,7 @@ function App() {
             setText('Error fetching file content.');
 
             // Try swapping sessionArea and filename
-            const swappedUrl = `http://awgp.guru:8084/download2/${filename}|${sessionArea}`;
+            const swappedUrl = `${downloadUrlPre}/${filename}|${sessionArea}`;
             axios.get(swappedUrl)
               .then((response) => {
                 setText(response.data.file_content);

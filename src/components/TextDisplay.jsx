@@ -6,6 +6,7 @@ import OriginalTextViewer from './OriginalTextViewer';
 import MenuSection from './MenuSection';
 import GoogleTranslateRedirect from './GoogleTranslateRedirect';
 import './TextDisplay.css';
+import config from '../../app_config';
 
 const TextDisplay = ({ text, sessionArea, filename }) => {
   const [lines, setLines] = useState([]);
@@ -29,8 +30,8 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
 
   const uploadModifiedText = () => {
     const content = lines.join('\n');
-
-    axios.post('http://127.0.0.1:8000/upload2/', {
+    let upload_url = config.uploadUrl;
+    axios.post(upload_url, {
       session_area: sessionArea,
       filename: filename,
       content: content
