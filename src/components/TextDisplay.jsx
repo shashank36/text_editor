@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Button, Box } from '@mui/material';
+import { Container, Grid, Button, Box, Typography } from '@mui/material';
 import TextEditor from './TextEditor';
 import axios from 'axios';
 import OriginalTextViewer from './OriginalTextViewer';
 import MenuSection from './MenuSection';
-import GoogleTranslateRedirect from './GoogleTranslateRedirect'; // Import the new component
+import GoogleTranslateRedirect from './GoogleTranslateRedirect';
 import './TextDisplay.css';
 
-const TextDisplay = ({ text,  sessionArea, filename }) => {
+const TextDisplay = ({ text, sessionArea, filename }) => {
   const [lines, setLines] = useState([]);
   const [currentLine, setCurrentLine] = useState(0);
   const [highlightedText, setHighlightedText] = useState('');
@@ -16,7 +16,7 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
   const [selectedPattern, setSelectedPattern] = useState('');
   const [filteredLines, setFilteredLines] = useState([]);
   const [filteredLineIndices, setFilteredLineIndices] = useState([]);
-  
+
   useEffect(() => {
     setLines(text.split('\n'));
   }, [text]);
@@ -43,7 +43,6 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
       alert('Failed to upload file.');
     });
   };
-
 
   const applyPattern = (pattern) => {
     let matchedLines = [];
@@ -82,7 +81,6 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
     setFilteredLineIndices(matchedIndices);
     setCurrentLine(0);
   };
-  
 
   const handleUpClick = () => {
     setCurrentLine((prev) => Math.max(prev - 1, 0));
@@ -101,7 +99,7 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
     if (selectedWord && filteredLineIndices.length > 0) {
       const originalLineIndex = filteredLineIndices[currentLine];
       let updatedLine;
-  
+
       if (suggestion === 'Remove URL') {
         updatedLine = lines[originalLineIndex].replace(selectedWord, '');
       } else if (suggestion === 'Remove English Word') {
@@ -111,17 +109,15 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
       } else {
         updatedLine = lines[originalLineIndex].replace(selectedWord, suggestion);
       }
-  
-      // Update the original lines array
+
       const updatedLines = [...lines];
       updatedLines[originalLineIndex] = updatedLine;
       setLines(updatedLines);
-  
-      // Update the filtered lines
+
       const updatedFilteredLines = [...filteredLines];
       updatedFilteredLines[currentLine] = updatedLine;
       setFilteredLines(updatedFilteredLines);
-  
+
       setHighlightedText(updatedLine);
       setSelectedWord('');
       setSuggestions([]);
@@ -151,6 +147,9 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Box>
+            <Typography variant="h3" gutterBottom>
+              Edit Text
+            </Typography>
             <TextEditor
               lines={lines}
               filteredLines={filteredLines}
@@ -187,6 +186,9 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
           </Box>
         </Grid>
         <Grid item xs={12} md={3}>
+          <Typography variant="h4" gutterBottom>
+            Complete Text
+          </Typography>
           <OriginalTextViewer
             lines={lines}
             filteredLineIndices={filteredLineIndices}
@@ -198,7 +200,6 @@ const TextDisplay = ({ text,  sessionArea, filename }) => {
         <Button variant="contained" onClick={downloadModifiedText}>Download Modified Text</Button>
         <Button variant="contained" onClick={uploadModifiedText} sx={{ ml: 2 }}>Upload to Server</Button>
       </Box>
-      
     </Container>
   );
 };
