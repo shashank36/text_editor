@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography } from '@mui/material';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import FileUpload from './components/FileUpload';
 import TextDisplay from './components/TextDisplay';
 import ExplainerSection from './components/ExplainerSection';
 import config from '../app_config';
+import { ChakraProvider, Box } from '@chakra-ui/react';
 
 // Function to extract values from URL
 function extractValuesFromURL(url) {
@@ -95,34 +95,23 @@ function App() {
   }, [location.search]);
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        padding: 2,
-      }}
-    >
-      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-        Text Correction Prototype v0.1
-      </Typography>
-      {!text ? (
-        <>
-          <ExplainerSection />
-          <FileUpload onFileUpload={handleFileUpload} />
-        </>
-      ) : (
-        <TextDisplay
-          text={text} 
-          sessionArea={successfulSessionArea} 
-          filename={successfulFilename}
-        />
-      )}
-    </Container>
+    <ChakraProvider>
+      <Box className="app-container">
+        <h1 className="app-title">Text Correction Prototype v0.1</h1>
+        {!text ? (
+          <>
+            <ExplainerSection />
+            <FileUpload onFileUpload={handleFileUpload} />
+          </>
+        ) : (
+          <TextDisplay
+            text={text} 
+            sessionArea={successfulSessionArea} 
+            filename={successfulFilename}
+          />
+        )}
+      </Box>
+    </ChakraProvider>
   );
 }
 

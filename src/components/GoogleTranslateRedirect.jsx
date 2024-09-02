@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button } from '@mui/material';
+// import './GoogleTranslateRedirect.css';
 
 const GoogleTranslateRedirect = () => {
   const [text, setText] = useState('');
@@ -9,35 +9,23 @@ const GoogleTranslateRedirect = () => {
   };
 
   const handleTranslate = () => {
-    // Encode the text for URL
     const encodedText = encodeURIComponent(text);
-    // Google Translate URL with Hindi as the target language
     const translateUrl = `https://translate.google.com/?sl=auto&tl=hi&text=${encodedText}`;
-
-    // Open the URL in a new tab
     window.open(translateUrl, '_blank');
   };
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <TextField
-        fullWidth
-        multiline
-        rows={4}
-        variant="outlined"
-        label="Paste Text Here"
+    <div className="google-translate-redirect">
+      <textarea
         value={text}
         onChange={handleTextChange}
-        sx={{ mb: 2 }}
+        placeholder="Paste Text Here"
+        rows={4}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleTranslate}
-      >
+      <button onClick={handleTranslate}>
         Hear How Your Changes Sound
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 };
 

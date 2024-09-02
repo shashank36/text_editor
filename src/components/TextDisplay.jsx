@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Button, Box, Typography } from '@mui/material';
-import TextEditor from './TextEditor';
 import axios from 'axios';
-import OriginalTextViewer from './OriginalTextViewer';
 import MenuSection from './MenuSection';
-import GoogleTranslateRedirect from './GoogleTranslateRedirect';
-import './TextDisplay.css';
+import TextEditor from './TextEditor';
+import OriginalTextViewer from './OriginalTextViewer';
 import config from '../../app_config';
+import { Box, Flex, VStack, Heading, Button } from '@chakra-ui/react';
 
 const TextDisplay = ({ text, sessionArea, filename }) => {
   const [lines, setLines] = useState([]);
   const [currentLine, setCurrentLine] = useState(0);
-  const [highlightedText, setHighlightedText] = useState('');
-  const [selectedWord, setSelectedWord] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
   const [selectedPattern, setSelectedPattern] = useState('');
   const [filteredLines, setFilteredLines] = useState([]);
   const [filteredLineIndices, setFilteredLineIndices] = useState([]);
+  const [highlightedText, setHighlightedText] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [selectedWord, setSelectedWord] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     setLines(text.split('\n'));
@@ -51,7 +50,7 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
     const urlRegex = /(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/g;
     const pageBreakRegex = /^=!pgB!=.*=!Epg!=/;
     const englishWordRegex = /\b[a-zA-Z]+\b/g;
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/g; // Example special characters
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/g;
   
     lines.forEach((line, index) => {
       if (pattern === 'Modify Number Hyphen' && /-(\d|\p{Nd})/u.test(line)) {
@@ -123,6 +122,7 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
       setSelectedWord('');
       setSuggestions([]);
     }
+    setIsEditing(true);
   };
 
   const downloadModifiedText = () => {
@@ -138,16 +138,18 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
   };
 
   return (
-    <Container>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={3}>
-          <MenuSection
-            selectedPattern={selectedPattern}
-            handleMenuClick={handleMenuClick}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Box>
+    <Flex className="text-display-container" h="100vh" bg="gray.100">
+      <Box className="sidebar" w="250px" bg="white" boxShadow="md" p={4}>
+        <Heading as="h2" size="md" mb={4}>Text Correction Tools</Heading>
+        <MenuSection 
+          selectedPattern={selectedPattern} 
+          setSelectedPattern={setSelectedPattern} 
+        />
+      </Box>
+      <VStack className="main-content" flex={1} p={6} spacing={6} align="stretch">
+        <Heading as="h1" size="xl">Text Correction Prototype v0.1</Heading>
+        <Flex className="text-content-wrapper" flex={1} gap={6}>
+          <Box className="text-editor-container" flex={1} bg="white" boxShadow="md" borderRadius="md" overflow="hidden">
             <TextEditor
               lines={lines}
               filteredLines={filteredLines}
@@ -158,59 +160,41 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
               setSuggestions={setSuggestions}
               setSelectedWord={setSelectedWord}
               setLines={setLines}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
             />
-            <Box mt={2}>
-              <Button variant="contained" onClick={handleUpClick}>Up</Button>
-              <Button variant="contained" onClick={handleDownClick} sx={{ ml: 2 }}>Down</Button>
-            </Box>
-            <Box mt={2}>
-              <GoogleTranslateRedirect />
-            </Box>
-  
-            
-            {suggestions.length > 0 && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexWrap: 'wrap', // Wraps to the next line when space runs out
-                  marginTop: 2,
-                  gap: 1, // Adds some spacing between the buttons
-                }}
-              >
-                {suggestions.map((suggestion, index) => (
-                  <Button
-                    key={index}
-                    variant="outlined"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    sx={{
-                      marginBottom: 1, // Spacing between rows
-                      flex: '0 1 auto', // Allow the button to grow and shrink
-                    }}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </Box>
-            )}
-            
-  
+            <Flex className="editor-controls" justifyContent="center" p={4} borderTop="1px" borderColor="gray.200">
+              <Button onClick={handleUpClick} mr={2} colorScheme="blue">Up</Button>
+              <Button onClick={handleDownClick} colorScheme="blue">Down</Button>
+            </Flex>
           </Box>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <OriginalTextViewer
-            lines={lines}
-            filteredLineIndices={filteredLineIndices}
-            currentLine={currentLine}
-          />
-        </Grid>
-      </Grid>
-      <Box mt={2}>
-        <Button variant="contained" onClick={downloadModifiedText}>Download Modified Text</Button>
-        <Button variant="contained" onClick={uploadModifiedText} sx={{ ml: 2 }}>Upload to Server</Button>
-      </Box>
-    </Container>
+          <Box className="original-viewer-container" flex={1}>
+            <OriginalTextViewer 
+              lines={lines}
+              filteredLineIndices={filteredLineIndices}
+              currentLine={currentLine}
+            />
+          </Box>
+        </Flex>
+        <Flex className="main-controls" justifyContent="center">
+          <Button onClick={downloadModifiedText} mr={2} colorScheme="green">Download Modified Text</Button>
+          <Button onClick={uploadModifiedText} colorScheme="green">Upload Modified Text</Button>
+        </Flex>
+        {suggestions.length > 0 && (
+          <Box className="suggestions" bg="white" p={4} borderRadius="md" boxShadow="md">
+            <Heading as="h4" size="md" mb={2}>Suggestions:</Heading>
+            <Flex flexWrap="wrap">
+              {suggestions.map((suggestion, index) => (
+                <Button key={index} onClick={() => handleSuggestionClick(suggestion)} mr={2} mb={2} colorScheme="purple" variant="outline">
+                  {suggestion}
+                </Button>
+              ))}
+            </Flex>
+          </Box>
+        )}
+      </VStack>
+    </Flex>
   );
-  
 };
 
 export default TextDisplay;

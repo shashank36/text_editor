@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
+// import './ExplainerSection.css';
 
 const ExplainerSection = () => {
   const [language, setLanguage] = useState('english');
@@ -27,21 +27,17 @@ const ExplainerSection = () => {
   };
 
   return (
-    <Box sx={{ mb: 4, padding: 2, backgroundColor: '#e0e0e0', borderRadius: '8px' }}>
-      <Button variant="outlined" onClick={handleLanguageToggle} sx={{ mb: 2 }}>
+    <div className="explainer-section">
+      <button className="language-toggle" onClick={handleLanguageToggle}>
         {language === 'english' ? 'Read in Hindi' : 'अंग्रेज़ी में पढ़ें'}
-      </Button>
-      <Typography variant="h5" gutterBottom>
-        {language === 'english' ? 'How to Use the Filter Menu' : 'फ़िल्टर मेनू का उपयोग कैसे करें'}
-      </Typography>
-      <List>
+      </button>
+      <h2>{language === 'english' ? 'How to Use the Filter Menu' : 'फ़िल्टर मेनू का उपयोग कैसे करें'}</h2>
+      <ul>
         {steps[language].map((step, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={step} />
-          </ListItem>
+          <li key={index}>{step}</li>
         ))}
-      </List>
-    </Box>
+      </ul>
+    </div>
   );
 };
 

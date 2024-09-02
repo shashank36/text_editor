@@ -1,0 +1,25 @@
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-section button {
+  text-align: left;
+  background-color: transparent;
+  color: var(--primary-text);
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.menu-section button:hover {
+  background-color: var(--highlight-bg);
+}
+
+.menu-section button.selected {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useRef, useEffect } from 'react';
+import { Box, Text, VStack } from '@chakra-ui/react';
+import './TextEditor.css';
 import './TextDisplay.css';
 
 const TextEditor = ({ 
@@ -13,24 +14,15 @@ const TextEditor = ({
   setSelectedWord,
   setLines 
 }) => {
-  const containerRef = useRef(null);
-  const lineRefs = useRef([]);
+  const editorRef = useRef(null);
 
   useEffect(() => {
-    if (lineRefs.current[currentLine]) {
-      const container = containerRef.current;
-      const lineElement = lineRefs.current[currentLine];
-
-      const lineRect = lineElement.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-
-      if (lineRect.top < containerRect.top) {
-        container.scrollTop -= (containerRect.top - lineRect.top);
-      } else if (lineRect.bottom > containerRect.bottom) {
-        container.scrollTop += (lineRect.bottom - containerRect.bottom);
+    if (editorRef.current) {
+      const lineElements = editorRef.current.querySelectorAll('p');
+      if (lineElements[currentLine]) {
+        lineElements[currentLine].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
-    console.log('TextEditor :', lines[filteredLineIndices[currentLine]]);
   }, [currentLine]);
 
 
@@ -100,34 +92,38 @@ const TextEditor = ({
       setHighlightedText('');
     }
   };
-  
-  
-  
+
+  const handleLineEdit = (index, newContent) => {
+    const updatedLines = [...lines];
+    updatedLines[filteredLineIndices[index]] = newContent;
+    setLines(updatedLines);
+  };
+
   return (
-    <Box
-      ref={containerRef}
-      className="text-display"
-      sx={{ overflowY: 'auto', height: '400px', backgroundColor: '#f0f0f0', padding: 2 }}
+    <Box 
+      ref={editorRef}
+      className="text-editor"
       onMouseUp={handleTextSelect}
-    > 
-      {filteredLines.map((line, index) => (
-        <Typography
-          key={index}
-          ref={(el) => (lineRefs.current[index] = el)}
-          variant="body1"
-          component="p"
-          className={
-            index === currentLine
-              ? 'highlight'
-              : index % 2 === 0
-              ? 'even-line'
-              : 'odd-line'
-          }
-          sx={{ padding: '4px 0' }}
-        >
-          {line}
-        </Typography>
-      ))}
+      h="100%"
+      overflowY="auto"
+    >
+      <VStack spacing={0} align="stretch">
+        {filteredLines.map((line, index) => (
+          <Text
+            key={index}
+            className={index === currentLine ? 'highlight' : ''}
+            p={2}
+            bg={index === currentLine ? 'yellow.100' : 'transparent'}
+            borderBottom="1px dashed"
+            borderColor="gray.200"
+            _hover={{ bg: 'blue.50' }}
+            cursor="pointer"
+            onClick={() => setCurrentLine(index)}
+          >
+            {line}
+          </Text>
+        ))}
+      </VStack>
     </Box>
   );
 };

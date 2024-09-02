@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^5.16.7",
     "axios": "^1.7.5",
+    "framer-motion": "^11.3.31",
     "qs": "^6.13.0",
     "query-string": "^9.1.0",
     "react": "^18.3.1",

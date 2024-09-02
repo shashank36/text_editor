@@ -1,57 +1,45 @@
 import React, { useRef, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
-import './TextDisplay.css';
+import './OriginalTextViewer.css';
+import { Box, Text, VStack } from '@chakra-ui/react';
 
 const OriginalTextViewer = ({ lines, filteredLineIndices, currentLine }) => {
-  const containerRef = useRef(null);
-  const lineRefs = useRef([]);
-
-  // Map currentLine to the correct index in filteredLineIndices
-  const highlightIndex = filteredLineIndices[currentLine];
+  const viewerRef = useRef(null);
 
   useEffect(() => {
-    if (highlightIndex !== undefined && lineRefs.current[highlightIndex]) {
-      const container = containerRef.current;
-      const lineElement = lineRefs.current[highlightIndex];
-
-      // Scroll to make the highlighted line visible in the center of the container
-      const lineRect = lineElement.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-
-      if (lineRect.top < containerRect.top || lineRect.bottom > containerRect.bottom) {
-        const offset = lineRect.top - containerRect.top;
-        container.scrollTop += offset - containerRect.height / 2 + lineRect.height / 2;
+    if (viewerRef.current && filteredLineIndices.length > 0) {
+      const lineElements = viewerRef.current.querySelectorAll('p');
+      const currentLineIndex = filteredLineIndices[currentLine];
+      if (lineElements[currentLineIndex]) {
+        lineElements[currentLineIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
-    console.log("Original: ", lines[highlightIndex]);
-
-  }, [highlightIndex]);
+  }, [currentLine, filteredLineIndices]);
 
   return (
-    <Box
-      ref={containerRef}
-      className="text-display-original"
-      sx={{ 
-        overflowY: 'auto', 
-        height: 'calc(100vh - 48px)', // Adjusted height to fit the viewport
-        width: '35vw',    // Adjust width as needed
-        backgroundColor: '#ffffff', 
-        padding: 2, 
-        borderLeft: '1px solid #ccc' // Add a border to separate from TextEditor
-      }}
+    <Box 
+      ref={viewerRef} 
+      className="original-text-viewer"
+      borderWidth={1}
+      borderColor="gray.300"
+      borderRadius="md"
+      p={4}
+      bg="gray.50"
+      overflowY="auto"
+      h="100%"
     >
-      {lines.map((line, index) => (
-        <Typography
-          key={index}
-          ref={(el) => (lineRefs.current[index] = el)}
-          variant="body1"
-          component="p"
-          className={index === highlightIndex ? 'highlight' : ''}
-          sx={{ padding: '4px 0' }}
-        >
-          {line}
-        </Typography>
-      ))}
+      <VStack spacing={0} align="stretch">
+        {lines.map((line, index) => (
+          <Text
+            key={index}
+            className={filteredLineIndices.includes(index) ? 'highlight' : ''}
+            p={2}
+            bg={filteredLineIndices[currentLine] === index ? 'yellow.200' : 
+                filteredLineIndices.includes(index) ? 'yellow.100' : 'transparent'}
+          >
+            {line}
+          </Text>
+        ))}
+      </VStack>
     </Box>
   );
 };

@@ -34,3 +34,28 @@
 .controls {
   margin-top: 10px;
 }
+
+.text-editor {
+  flex: 1;
+  padding: 10px;
+  background-color: var(--secondary-bg);
+  color: var(--primary-text);
+  overflow-y: auto;
+}
+
+.text-editor p {
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.text-editor p.highlight {
+  background-color: #e6f3ff;
+}
+
+.text-editor p.even {
+  background-color: #f8f9fa;
+}
+
+.text-editor p.odd {
+  background-color: #ffffff;
+}

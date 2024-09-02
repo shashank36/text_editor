@@ -1,0 +1,28 @@
+.original-text-viewer {
+    flex: 1;
+    padding: 10px;
+    background-color: var(--secondary-bg);
+    color: var(--primary-text);
+    overflow-y: auto;
+}
+
+.original-text-viewer p {
+    margin: 0;
+    padding: 5px 10px;
+}
+
+.original-text-viewer p.highlight {
+    background-color: #fff3cd;
+}
+
+.original-text-viewer h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #333;
+}
+
+.original-text-viewer .text-content {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
