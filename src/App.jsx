@@ -59,11 +59,19 @@ function App() {
         filename = filename.substring(0, txtExtensionIndex + 4); // Keep .txt extension
       }
 
+      console.log("Filename: ", filename);
+
       // Function to fetch file content
       const fetchFileContent = (sessionArea, filename) => {
         const downloadUrlPre = config.downloadUrl;
-        const downloadUrl = `${downloadUrlPre}${sessionArea}|${filename}`;
-        console.log(downloadUrl)
+
+        // Encode sessionArea and filename to prevent broken links due to spaces or special characters
+        const encodedSessionArea = encodeURIComponent(sessionArea);
+        const encodedFilename = encodeURIComponent(filename);
+
+        const downloadUrl = `${downloadUrlPre}${encodedSessionArea}|${encodedFilename}`;
+        console.log("Download URL:", downloadUrl);
+
         axios.get(downloadUrl)
           .then((response) => {
             setText(response.data.file_content);
@@ -75,7 +83,9 @@ function App() {
             setText('Error fetching file content.');
 
             // Try swapping sessionArea and filename
-            const swappedUrl = `${downloadUrlPre}/${filename}|${sessionArea}`;
+            const swappedUrl = `${downloadUrlPre}${encodedFilename}|${encodedSessionArea}`;
+            console.log("Swapped URL:", swappedUrl);
+
             axios.get(swappedUrl)
               .then((response) => {
                 setText(response.data.file_content);
