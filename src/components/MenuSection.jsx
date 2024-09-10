@@ -63,6 +63,14 @@ const MenuSection = ({ selectedPattern, handleMenuClick }) => (
         Remove Special Characters
       </Button>
     </Tooltip>
+    <Tooltip title="Enable suggestions for inserting characters and chapter breaks" placement="right">
+      <Button
+        variant={selectedPattern === 'Insert Suggestions' ? 'contained' : 'outlined'}
+        onClick={() => handleMenuClick('Insert Suggestions')}
+      >
+        Insert Suggestions
+      </Button>
+  </Tooltip>
     {/* Add more buttons with tooltips as needed */}
   </Box>
 );

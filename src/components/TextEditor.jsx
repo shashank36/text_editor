@@ -11,7 +11,10 @@ const TextEditor = ({
   setHighlightedText, 
   setSuggestions, 
   setSelectedWord,
-  setLines 
+  setLines,
+  selectedPattern,
+  onWhitespaceClick,
+  isInsertSuggestions,
 }) => {
   const containerRef = useRef(null);
   const lineRefs = useRef([]);
@@ -33,6 +36,24 @@ const TextEditor = ({
     console.log('TextEditor :', lines[filteredLineIndices[currentLine]]);
   }, [currentLine]);
 
+  const handleWhitespaceClick = (event) => {
+    const lineElement = event.target.closest('p');
+    if (lineElement && lineElement.classList.contains('highlight')) {
+      onWhitespaceClick();
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setCurrentLine((prevLine) => Math.max(0, prevLine - 1));
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setCurrentLine((prevLine) => Math.min(filteredLines.length - 1, prevLine + 1));
+    }
+  };
+
+  
 
   const getHindiNumeralSuggestions = (selectedNumeral) => {
     const hindiNumerals = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
@@ -61,38 +82,53 @@ const TextEditor = ({
   const handleTextSelect = () => {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
-    const urlRegex = /(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/g;
-    const englishWordRegex = /\b[a-zA-Z]+\b/g;
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/g;
 
-
-
-  
     if (selectedText && selection.anchorNode.parentElement.classList.contains('highlight')) {
       setSelectedWord(selectedText);
       setHighlightedText(filteredLines[currentLine]);
-  
-      // Provide suggestions based on the selected pattern
-      if (/-(\d|\p{Nd})/u.test(selectedText)) {
-        setSuggestions([selectedText.replace(/-(\d|\p{Nd})/u, '- $1')]);
-      } else if (/([a-zA-Z])\-([a-zA-Z])/.test(selectedText)) {
-        setSuggestions(generateHyphenSuggestions(selectedText));
-      } else if (/वं\.|वं०/.test(selectedText)) {
-        setSuggestions(['वंदनीया', 'वंदनीय']);
-      } else if (/पं\.|पं०/.test(selectedText)) {
-        setSuggestions(['पंडित']);
-      } else if (/मि\.|मि०/.test(selectedText)) {
-        setSuggestions(['मिस्टर']);
-      } else if (/[\u0966-\u096F]/.test(selectedText)) { // Check for Hindi numerals
-        setSuggestions(getHindiNumeralSuggestions(selectedText));
-      } else if (urlRegex.test(selectedText)) {
-        setSuggestions(['Remove URL']);
-      } else if (englishWordRegex.test(selectedText)) {
-        setSuggestions(['Remove English Word']);
-      } else if (specialCharRegex.test(selectedText)) {
-        setSuggestions(['Remove Special Character']);
-      } else {
-        setSuggestions([]);
+
+      switch (selectedPattern) {
+        case 'Modify Number Hyphen':
+          if (/-(\d|[\u0966-\u096F])/.test(selectedText)) {
+            setSuggestions([selectedText.replace(/-(\d|[\u0966-\u096F])/, '- $1')]);
+          }
+          break;
+        case 'Modify Character Hyphen':
+          if (/(\p{L})-(\p{L})/u.test(selectedText)) {
+            setSuggestions(generateHyphenSuggestions(selectedText));
+          }
+          break;
+        case 'Modify Hindi Short Forms':
+          if (/वं\.|वं०/.test(selectedText)) {
+            setSuggestions(['वंदनीया', 'वंदनीय']);
+          } else if (/पं\.|पं०/.test(selectedText)) {
+            setSuggestions(['पंडित']);
+          } else if (/मि\.|मि०/.test(selectedText)) {
+            setSuggestions(['मिस्टर']);
+          }
+          break;
+        case 'Modify Hindi Numerals':
+          if (/[\u0966-\u096F]/.test(selectedText)) {
+            setSuggestions(getHindiNumeralSuggestions(selectedText));
+          }
+          break;
+        case 'Remove URLs':
+          if (/(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/.test(selectedText)) {
+            setSuggestions(['Remove URL']);
+          }
+          break;
+        case 'Remove English Words':
+          if (/\b[a-zA-Z]+\b/.test(selectedText)) {
+            setSuggestions(['Remove English Word']);
+          }
+          break;
+        case 'Remove Special Characters':
+          if (/[!@#$%^&*(),.?":{}|<>]/.test(selectedText)) {
+            setSuggestions(['Remove Special Character']);
+          }
+          break;
+        default:
+          setSuggestions([]);
       }
     } else {
       setSelectedWord('');
@@ -109,15 +145,16 @@ const TextEditor = ({
       className="text-display"
       sx={{ overflowY: 'auto', height: '400px', backgroundColor: '#f0f0f0', padding: 2 }}
       onMouseUp={handleTextSelect}
+      onClick={handleWhitespaceClick}
     > 
-      {filteredLines.map((line, index) => (
+      {(isInsertSuggestions ? lines : filteredLines).map((line, index) => (
         <Typography
           key={index}
           ref={(el) => (lineRefs.current[index] = el)}
           variant="body1"
           component="p"
           className={
-            index === currentLine
+            index === (isInsertSuggestions ? index : currentLine)
               ? 'highlight'
               : index % 2 === 0
               ? 'even-line'

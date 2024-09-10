@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Container, Grid, Button, Box, Typography } from '@mui/material';
 import TextEditor from './TextEditor';
 import axios from 'axios';
@@ -17,6 +17,9 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
   const [selectedPattern, setSelectedPattern] = useState('');
   const [filteredLines, setFilteredLines] = useState([]);
   const [filteredLineIndices, setFilteredLineIndices] = useState([]);
+  const textEditorRef = useRef(null);
+  const [showCustomSuggestions, setShowCustomSuggestions] = useState(false);
+  const [customSuggestionPosition, setCustomSuggestionPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     setLines(text.split('\n'));
@@ -27,6 +30,31 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
       applyPattern(selectedPattern);
     }
   }, [selectedPattern, lines]);
+
+  useEffect(() => {
+    if (textEditorRef.current) {
+      textEditorRef.current.focus();
+    }
+  }, [selectedPattern]);
+
+  const handleWhitespaceClick = () => {
+    if (selectedPattern === 'Insert Suggestions') {
+      setSuggestions([
+        "CHAPTER_BREAKING_24422442",
+        "।",
+        ",",
+        ":"
+      ]);
+    }
+  };
+
+  const handleCustomSuggestionClick = (suggestion) => {
+    const updatedLines = [...lines];
+    const currentLineIndex = filteredLineIndices[currentLine];
+    updatedLines[currentLineIndex] += suggestion;
+    setLines(updatedLines);
+    setSuggestions([]);
+  };
 
   const uploadModifiedText = () => {
     const content = lines.join('\n');
@@ -48,33 +76,52 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
   const applyPattern = (pattern) => {
     let matchedLines = [];
     let matchedIndices = [];
-    const urlRegex = /(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/g;
-    const pageBreakRegex = /^=!pgB!=.*=!Epg!=/;
-    const englishWordRegex = /\b[a-zA-Z]+\b/g;
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/g; // Example special characters
   
     lines.forEach((line, index) => {
-      if (pattern === 'Modify Number Hyphen' && /-(\d|\p{Nd})/u.test(line)) {
-        matchedLines.push(line);
-        matchedIndices.push(index);
-      } else if (pattern === 'Modify Character Hyphen' && /([a-zA-Z])\-([a-zA-Z])/.test(line)) {
-        matchedLines.push(line);
-        matchedIndices.push(index);
-      } else if (pattern === 'Modify Hindi Short Forms' && /(वं\.|वं०|पं\.|पं०|मि\.|मि०)/.test(line)) {
-        matchedLines.push(line);
-        matchedIndices.push(index);
-      } else if (pattern === 'Modify Hindi Numerals' && /[\u0966-\u096F]/.test(line)) { 
-        matchedLines.push(line);
-        matchedIndices.push(index);
-      } else if (pattern === 'Remove URLs' && urlRegex.test(line) && !pageBreakRegex.test(line)) {
-        matchedLines.push(line);
-        matchedIndices.push(index);
-      } else if (pattern === 'Remove English Words' && englishWordRegex.test(line) && !pageBreakRegex.test(line)) {
-        matchedLines.push(line);
-        matchedIndices.push(index);
-      } else if (pattern === 'Remove Special Characters' && specialCharRegex.test(line) && !pageBreakRegex.test(line)) {
-        matchedLines.push(line);
-        matchedIndices.push(index);
+      switch (pattern) {
+        case 'Modify Number Hyphen':
+          if (/-(\d|[\u0966-\u096F])/.test(line)) {
+            matchedLines.push(line);
+            matchedIndices.push(index);
+          }
+          break;
+        case 'Modify Character Hyphen':
+          if (/(\p{L})-(\p{L})/u.test(line)) {
+            matchedLines.push(line);
+            matchedIndices.push(index);
+          }
+          break;
+        case 'Modify Hindi Short Forms':
+          if (/(वं\.|वं०|पं\.|पं०|मि\.|मि०)/.test(line)) {
+            matchedLines.push(line);
+            matchedIndices.push(index);
+          }
+          break;
+        case 'Modify Hindi Numerals':
+          if (/[\u0966-\u096F]/.test(line)) {
+            matchedLines.push(line);
+            matchedIndices.push(index);
+          }
+          break;
+        case 'Remove URLs':
+          if (/(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+/.test(line)) {
+            matchedLines.push(line);
+            matchedIndices.push(index);
+          }
+          break;
+        case 'Remove English Words':
+          if (/\b[a-zA-Z]+\b/.test(line)) {
+            matchedLines.push(line);
+            matchedIndices.push(index);
+          }
+          break;
+        case 'Remove Special Characters':
+          if (/[!@#$%^&*(),.?":{}|<>]/.test(line)) {
+            matchedLines.push(line);
+            matchedIndices.push(index);
+          }
+          break;
+        
       }
     });
   
@@ -85,10 +132,16 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
 
   const handleUpClick = () => {
     setCurrentLine((prev) => Math.max(prev - 1, 0));
+    if (textEditorRef.current) {
+      textEditorRef.current.focus();
+    }
   };
 
   const handleDownClick = () => {
     setCurrentLine((prev) => Math.min(prev + 1, filteredLines.length - 1));
+    if (textEditorRef.current) {
+      textEditorRef.current.focus();
+    }
   };
 
   const handleMenuClick = (pattern) => {
@@ -147,18 +200,28 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <Box>
-            <TextEditor
-              lines={lines}
-              filteredLines={filteredLines}
-              filteredLineIndices={filteredLineIndices}
-              currentLine={currentLine}
-              setCurrentLine={setCurrentLine}
-              setHighlightedText={setHighlightedText}
-              setSuggestions={setSuggestions}
-              setSelectedWord={setSelectedWord}
-              setLines={setLines}
+          <Box sx={{ position: 'relative' }}>
+          <TextEditor
+            ref={textEditorRef}
+            lines={lines}
+            filteredLines={filteredLines}
+            filteredLineIndices={filteredLineIndices}
+            currentLine={currentLine}
+            setCurrentLine={setCurrentLine}
+            setHighlightedText={setHighlightedText}
+            setSuggestions={setSuggestions}
+            setSelectedWord={setSelectedWord}
+            setLines={setLines}
+            selectedPattern={selectedPattern}
+            onWhitespaceClick={handleWhitespaceClick}
+            isInsertSuggestions={selectedPattern === 'Insert Suggestions'}
+          />
+             {showCustomSuggestions && (
+              <CustomSuggestions
+              position={customSuggestionPosition}
+              onSuggestionClick={handleCustomSuggestionClick}
             />
+          )}
             <Box mt={2}>
               <Button variant="contained" onClick={handleUpClick}>Up</Button>
               <Button variant="contained" onClick={handleDownClick} sx={{ ml: 2 }}>Down</Button>
@@ -172,26 +235,29 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
               <Box
                 sx={{
                   display: 'flex',
-                  flexWrap: 'wrap', // Wraps to the next line when space runs out
+                  flexWrap: 'wrap',
                   marginTop: 2,
-                  gap: 1, // Adds some spacing between the buttons
+                  gap: 1,
                 }}
               >
-                {suggestions.map((suggestion, index) => (
-                  <Button
-                    key={index}
-                    variant="outlined"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    sx={{
-                      marginBottom: 1, // Spacing between rows
-                      flex: '0 1 auto', // Allow the button to grow and shrink
-                    }}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </Box>
-            )}
+              {suggestions.map((suggestion, index) => (
+            <Button
+        key={index}
+        variant="outlined"
+        onClick={() => selectedPattern === 'Insert Suggestions' 
+          ? handleCustomSuggestionClick(suggestion) 
+          : handleSuggestionClick(suggestion)
+        }
+        sx={{
+          marginBottom: 1,
+          flex: '0 1 auto',
+        }}
+      >
+        {suggestion === "CHAPTER_BREAKING_24422442" ? "Add chapter break" : suggestion}
+      </Button>
+    ))}
+  </Box>
+)}
             
   
           </Box>
@@ -212,5 +278,6 @@ const TextDisplay = ({ text, sessionArea, filename }) => {
   );
   
 };
+
 
 export default TextDisplay;
