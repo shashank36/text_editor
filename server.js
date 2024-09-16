@@ -5,7 +5,7 @@ import morgan from 'morgan'; // Import Morgan for logging
 import fs from 'fs';
 import https from 'https'; // HTTPS module
 import http from 'http';   // HTTP module
-import config from './config.json'; // Import configuration file
+import config from './config.json' assert { type: 'json' }; // Import configuration file
 
 // Compatibility with ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -38,14 +38,6 @@ if (config.useSSL) {
     // Create HTTPS server on specified SSL port
     https.createServer(sslOptions, app).listen(config.sslPort, () => {
         console.log(`HTTPS Server is running on port ${config.sslPort}`);
-    });
-
-    // Optional HTTP server to redirect to HTTPS (if needed)
-    http.createServer((req, res) => {
-        res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-        res.end();
-    }).listen(80, () => {
-        console.log('HTTP Server is running on port 80 and redirecting to HTTPS');
     });
 
 } else {
