@@ -1,0 +1,7 @@
+{
+    "useSSL": true,
+    "sslKeyPath": "/path/to/ssl/private.key.pem",
+    "sslCertPath": "/path/to/ssl/domain.cert.pem",
+    "sslPort": 8084,
+    "port": 8084
+}
